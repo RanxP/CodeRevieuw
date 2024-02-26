@@ -12,11 +12,11 @@ from sklearn.preprocessing import PolynomialFeatures, RobustScaler, MinMaxScaler
 from sklearn.impute import SimpleImputer, KNNImputer
 from sklearn.pipeline import make_pipeline, Pipeline
 from sklearn.compose import ColumnTransformer
-from sklearn.linear_model import Ridge
+
 
 import logging
 
-class LinearModel(DeployableModel):
+class DumyModel(DeployableModel):
     
     def deploy(self):
         df_x, df_y = self.transform_df_model_data_to_df_x_df_y(self.df_model_data, True)
@@ -67,16 +67,16 @@ class LinearModel(DeployableModel):
         x_enc = self.data_transformer.transform(df_x.reset_index()) # no naming and indexes
         return x_enc, df_y
     
-    def define_model(self) -> Ridge:
+    def define_model(self):
         return lr_model
     
-    def train_model(self, model:Ridge, df_x, df_y):
+    def train_model(self, model, df_x, df_y):
         logging.info("Model is starting training")
         model.fit(X = df_x, y= df_y)
         logging.info("Model is trained")
         return model
     
-    def predict_on_model(self,model:Ridge,df_p_x):
+    def predict_on_model(self,model,df_p_x):
         logging.info("Model is starting prediction")
         prediction = model.predict(df_p_x)
         logging.info("Model has predicted")

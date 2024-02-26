@@ -1,0 +1,65 @@
+# Refactor for collaborative development of Time series Forecasting models
+
+## Description
+
+This is a sample project that showcases a recent project of mine. I had developed a model that did sales forecasting for a client. However, the nature of the project meant that the scope increased over time. 
+This resulted in code that was not modular anymore and was quite tightly coupled. To solve this, we set up a few new goals for its refactor. The goals were:
+
+1. By DevOps principles, switching deployable models should be instantaneous.
+2. Collaboration and reusability: all steps before model training should be usable between models.
+3. Readability and technical depth: a model should be self-explanatory.
+
+The result of my effort is what you can see in this project.
+
+The main starting point is the file `dummy_deployable_model.py`, and the rest follows from there. It is according to an abstract base class (`ABC_deployable_model.py`).
+
+This dummy deployable model uses the classes defined in the `data_loader/*` to clean, enrich and transform the training data.
+
+The data is loaded from SQL in a standardized format that all these steps use, this means that each action can happen in any step and in any order. 
+Regardless for which exact model a step is developed, as long as it adheres to the set standard it can be reused by any project. 
+
+Other features of importance in this project are the creation of prediction data in the same format as training data and developed control mechanisms on the prediction.
+
+## Table of Contents
+
+- Data Loader: Has all files that contribute to the data cleaning, enrichment, and transformations before it is in its final shape for training.
+- Prediction Handler: Transforms the prediction to a human-readable format and handles the steps and transformations required for translating it to the business.
+
+## Copilot's Interpretation of the Code
+
+### Project Title
+
+This project provides a structured way to define, train, and deploy machine learning models. It includes an abstract base class `DeployableModel` and a concrete implementation `LinearModel` that extends `DeployableModel`.
+
+### DeployableModel
+
+`DeployableModel` is an abstract base class that serves as a blueprint for creating deployable machine learning models. It defines the following methods:
+
+- `deploy`: Calls the `default_deployment` method. This method should be overridden by subclasses to define their own deployment process if needed.
+- `load_model_data`: Loads model data using a provided `ModelDataLoader` object.
+- `clean_model_data`, `enrich_model_data`, `transform_model_data`: Should be implemented by subclasses to clean, enrich, and transform the model data respectively.
+- `transform_df_model_data_to_df_x_df_y`: Transforms the model data into two dataframes, `df_x` and `df_y`, which are used for training the model.
+- `define_model`, `train_model`, `predict_on_model`: Should be implemented by subclasses to define the model, train the model, and make predictions respectively.
+- `process_prediction_to_human_readable_format`, `process_hrf_to_business_impact`: Should be implemented by subclasses to process the predictions into a human-readable format and translate the predictions into business impact respectively.
+
+### LinearModel
+
+`LinearModel` is a concrete implementation of `DeployableModel`. It uses various helper objects to clean, enrich, transform, and process the data, and to define, train, and make predictions with the model. It defines the following methods:
+
+- `deploy`: Transforms the model data, defines the model, trains the model, makes predictions, processes the predictions, and translates the predictions into business impact.
+- `clean_model_data`: Cleans the model data by removing unstocked products and products with no recent sales.
+- `enrich_model_data`: Enriches the model data by adding weather data and a time feature column.
+- `define_data_transformer`: Defines a data transformer that scales the training data.
+- `transform_model_data`: Transforms the model data by frequency encoding it and applying the data transformer.
+- `define_model`: Returns the linear regression model.
+- `train_model`: Trains the model using the provided data.
+- `predict_on_model`: Makes predictions using the trained model.
+- `process_prediction_to_human_readable_format`: Processes the predictions into a human-readable format.
+- `process_hrf_to_business_impact`: Translates the predictions into business impact.
+
+### Getting Started
+
+To use these classes, you will need to provide your own implementation of the abstract methods in `DeployableModel` and the helper objects used in `LinearModel`.
+
+
+
